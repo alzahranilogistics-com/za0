@@ -1,154 +1,59 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام إنذار تجريبي — مشرفين الزهراني</title>
-  <style>
-    body {
-      font-family: "Tajawal", sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 20px;
-    }
-    .card {
-      background: #111;
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 820px;
-      width: 95%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
-    h1 { color: #00e1ff; font-size: 24px; margin-bottom: 10px; }
-    .small { font-size: 15px; line-height: 1.6; color: #ccc; }
-    .row { display: flex; gap: 10px; margin: 15px 0; }
-    input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      border: 0;
-      font-size: 17px;
-      outline: none;
-    }
-    .badge {
-      background: #00e1ff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      color: #111;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-    }
-    .info { margin-top: 15px; }
-    .small-muted { font-size: 14px; color: #bbb; }
-    .log {
-      background: #222;
-      border-radius: 8px;
-      margin-top: 20px;
-      padding: 12px;
-      font-size: 14px;
-      height: 180px;
-      overflow-y: auto;
-      color: #0ff;
-    }
-
-    /* Overlay التنبيه */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .alert-box {
-      background: #111;
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 820px;
-      width: 95%;
-      display: flex;
-      gap: 18px;
-      align-items: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
-    .alert-box img {
-      width: 96px;
-      height: 96px;
-      border-radius: 12px;
-      object-fit: cover;
-    }
-    .alert-content { flex: 1; }
-    .alert-title { font-size: 20px; margin: 0 0 6px 0; color: #00e1ff; }
-    .alert-text { font-size: 18px; margin: 0 0 12px 0; }
-    .alert-actions { display: flex; gap: 10px; }
-    .btn {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 0;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .btn-stop { background: #444; color: #fff; }
-    .btn-dismiss { background: #eee; color: #111; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إنذار الطوارئ — الزهراني</title>
+<style>
+body {
+  font-family: "Tajawal", sans-serif;
+  background: radial-gradient(circle at center, #001f2b, #000);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+.container {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0,255,255,0.2);
+  width: 90%;
+  max-width: 500px;
+}
+input {
+  width: 90%;
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 10px;
+  text-align: center;
+}
+.alert {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #ff5555;
+  font-weight: bold;
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>نظام إنذار تجريبي — مشرفين الزهراني</h1>
-    <p class="small">أدخل رقم هاتفك السعودي (مثال: 0551234567 أو +966551234567). عند كتابة أي من أرقام صاحب المشروع سيشغل النظام تنبيهًا تجريبيًا ويسجل الحدث في Firebase.</p>
+<div class="container">
+  <h2>🚨 نظام إنذار طوارئ — مشرفين الزهراني 🚨</h2>
+  <p>أدخل رقمك السعودي (مثلاً: 0555956147 أو 570460094) لبدء التنبيه التجريبي.</p>
+  <input type="text" id="phoneInput" placeholder="أدخل رقمك هنا...">
+  <div id="alert" class="alert"></div>
+</div>
 
-    <div class="row">
-      <input id="phoneInput" type="text" placeholder="أدخل رقم الجوال هنا..." />
-      <div class="badge">تلقائي</div>
-    </div>
-
-    <div class="info">
-      <div class="small-muted">أرقام المالك:</div>
-      <ul id="ownerList" style="margin:8px 0 0 0;padding-left:18px"></ul>
-    </div>
-
-    <div class="info">
-      <label class="small-muted">نص الإشعار (قابل للتعديل):</label>
-      <div style="margin-top:8px">
-        <input id="messageInput" type="text" value="🔔 السادة مشرفين الزهراني — هذه رسالة تنبيه للتجربة فقط" />
-      </div>
-    </div>
-
-    <div class="log" id="logBox">
-      <div><strong>سجل الأحداث:</strong></div>
-    </div>
-
-    <p class="small-muted" style="margin-top:12px">المشروع يستخدم Firebase Firestore لتسجيل الاشتراكات والتنبيهات.</p>
-  </div>
-
-  <!-- صندوق التنبيه -->
-  <div id="overlay" class="overlay" role="dialog" aria-hidden="true">
-    <div class="alert-box">
-      <img id="alertIcon" src="https://i.ibb.co/chmmTz2p/alert-icon.png" alt="شعار التنبيه"/>
-      <div class="alert-content">
-        <div class="alert-title">تنبيه عاجل — مشرفين الزهراني</div>
-        <div class="alert-text" id="alertMessage">—</div>
-        <div class="alert-actions">
-          <button id="stopBtn" class="btn btn-stop">إيقاف الصوت</button>
-          <button id="dismissBtn" class="btn btn-dismiss">إغلاق</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* إعداد Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyAyowWAzM5tpmNVxx_1XoxZpQIRSKkRExA",
   authDomain: "al-zahrani-platform.firebaseapp.com",
@@ -160,132 +65,47 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* أرقام المالك */
-const ownerNumbers = [
+// أرقام الطوارئ المصرح بها:
+const alertNumbers = [
   "+966555956147",
   "+966570460094",
-  "+966582976776"
+  "+966582976776",
+  "0555956147",
+  "0570460094",
+  "0582976776"
 ];
-const ownerList = document.getElementById('ownerList');
-ownerNumbers.forEach(n=>{
-  const li=document.createElement('li');
-  li.textContent=n;
-  ownerList.appendChild(li);
-});
 
-/* عناصر DOM */
-const phoneInput=document.getElementById('phoneInput');
-const logBox=document.getElementById('logBox');
-const overlay=document.getElementById('overlay');
-const alertMessage=document.getElementById('alertMessage');
-const stopBtn=document.getElementById('stopBtn');
-const dismissBtn=document.getElementById('dismissBtn');
-const messageInput=document.getElementById('messageInput');
-const alertIcon=document.getElementById('alertIcon');
+// رابط صوت الإنذار (يشبه الدفاع المدني)
+const sirenUrl = "https://www.soundjay.com/button/sounds/beep-10.mp3";
 
-/* دالة تطبيع الرقم */
-function normalizeNumber(input){
-  if(!input) return "";
-  let v=input.replace(/\s+/g,'').replace(/-/g,'');
-  if(/^0\d{8,9}$/.test(v)) v='+966'+v.slice(1);
-  if(/^[5]\d{8,9}$/.test(v)) v='+966'+v;
-  if(/^966\d+/.test(v)&&v[0]!=='+' ) v='+'+v;
-  return v;
+function playSiren() {
+  const audio = new Audio(sirenUrl);
+  audio.play();
 }
 
-/* صوت صفارة إنذار */
-function createSiren(){
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
-  osc.type='sine'; osc.frequency.value=700;
-  gain.gain.value=0.0001;
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.start();
-  let up=true, running=true;
-  const interval=setInterval(()=>{
-    if(!running) return;
-    const target=up?1200:650;
-    osc.frequency.linearRampToValueAtTime(target,ctx.currentTime+0.25);
-    up=!up;
-  },450);
-  gain.gain.linearRampToValueAtTime(1.0,ctx.currentTime+0.08);
-  function stop(){
-    running=false; clearInterval(interval);
-    gain.gain.linearRampToValueAtTime(0.0001,ctx.currentTime+0.25);
-    setTimeout(()=>{try{osc.stop();ctx.close();}catch(e){}},350);
-  }
-  return {stop};
-}
+document.getElementById("phoneInput").addEventListener("input", async (e) => {
+  const value = e.target.value.trim();
+  const alertDiv = document.getElementById("alert");
 
-let sirenController=null;
+  if (alertNumbers.includes(value)) {
+    alertDiv.textContent = "🚨 تم التعرف على الرقم المصرح به! بدء تشغيل الإنذار...";
+    playSiren();
 
-/* Firestore تسجيل */
-async function registerSubscriber(phone){
-  try{
-    await db.collection('subscribers').doc(phone).set({
-      phone, registeredAt: firebase.firestore.FieldValue.serverTimestamp()
-    },{merge:true});
-    appendLog(`تم تسجيل المشترك: ${phone}`);
-  }catch(e){appendLog('خطأ: '+e.message);}
-}
-
-async function logAlert(phone,message){
-  try{
-    await db.collection('alerts').add({
-      phone,message,ts:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    appendLog(`سجل تنبيه: ${phone}`);
-  }catch(e){appendLog('خطأ في السجل: '+e.message);}
-}
-
-/* واجهة المستخدم */
-function appendLog(text){
-  const p=document.createElement('div');
-  p.textContent=`[${new Date().toLocaleTimeString()}] ${text}`;
-  logBox.appendChild(p);
-  logBox.scrollTop=logBox.scrollHeight;
-}
-
-let lastCheck=null,lastMatched=null;
-function checkInputDebounced(){
-  if(lastCheck) clearTimeout(lastCheck);
-  lastCheck=setTimeout(async()=>{
-    const raw=phoneInput.value.trim();
-    const norm=normalizeNumber(raw);
-    if(!norm) return;
-    appendLog('تحقق من الرقم: '+norm);
-    await registerSubscriber(norm);
-    const found=ownerNumbers.includes(norm);
-    if(found&&lastMatched!==norm){
-      lastMatched=norm;
-      const message=messageInput.value||'تنبيه تجريبي';
-      showAlert(message);
-      await logAlert(norm,message);
+    // تسجيل في Firestore
+    try {
+      await db.collection("alerts").add({
+        number: value,
+        timestamp: new Date(),
+        status: "Activated"
+      });
+      console.log("تم تسجيل الحدث في Firestore");
+    } catch (error) {
+      console.error("خطأ في التسجيل:", error);
     }
-  },450);
-}
-phoneInput.addEventListener('input',checkInputDebounced);
-
-/* عرض التنبيه */
-function showAlert(message){
-  alertMessage.textContent=message;
-  overlay.style.display='flex';
-  if(sirenController) try{sirenController.stop();}catch(e){}
-  try{
-    sirenController=createSiren();
-    appendLog('تشغيل صوت الإنذار');
-  }catch(e){
-    appendLog('لا يمكن تشغيل الصوت: '+e.message);
+  } else {
+    alertDiv.textContent = "";
   }
-}
-function stopSiren(){
-  if(sirenController){try{sirenController.stop();}catch(e){}sirenController=null;appendLog('تم إيقاف الصوت');}
-}
-stopBtn.addEventListener('click',()=>{stopSiren();});
-dismissBtn.addEventListener('click',()=>{stopSiren();overlay.style.display='none';});
-appendLog('الصفحة جاهزة — اكتب رقمك للبدء.');
+});
 </script>
 </body>
 </html>
-
