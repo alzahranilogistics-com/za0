@@ -1,33 +1,103 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>نظام إنذار تجريبي</title>
-<style>
-  :root{--accent:#d32f2f}
-  body{font-family: "Segoe UI", Tahoma, Arial; background:#f4f6f8; margin:0; padding:20px}
-  .card{max-width:900px;margin:20px auto;background:#fff;border-radius:12px;padding:22px;box-shadow:0 8px 30px rgba(15,15,15,0.06)}
-  h1{margin:0 0 6px 0;font-size:20px}
-  p.small{color:#666;margin-top:0}
-  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-  input[type=text]{flex:1;padding:12px;border-radius:8px;border:1px solid #ccc;font-size:16px}
-  .badge{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;font-weight:700}
-  .info{margin-top:14px;color:#333}
-  .log{margin-top:14px;background:#fafafa;padding:10px;border-radius:8px;border:1px dashed #eee;max-height:160px;overflow:auto}
-  .small-muted{font-size:13px;color:#777}
-  /* Modal Alert */
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;align-items:center;justify-content:center;z-index:9999}
-  .alert-box{background:#fff;color:#111;padding:24px;border-radius:12px;max-width:820px;width:95%;display:flex;gap:18px;align-items:center;box-shadow:0 20px 60px rgba(0,0,0,0.35)}
-  .alert-box img{width:96px;height:96px;border-radius:12px;object-fit:cover}
-  .alert-content{flex:1}
-  .alert-title{font-size:20px;margin:0 0 6px 0;color:var(--accent)}
-  .alert-text{font-size:18px;margin:0 0 12px 0}
-  .alert-actions{display:flex;gap:10px}
-  .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
-  .btn-stop{background:#444;color:#fff}
-  .btn-dismiss{background:#eee;color:#111}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام إنذار تجريبي — مشرفين الزهراني</title>
+  <style>
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+    .card {
+      background: #111;
+      padding: 24px;
+      border-radius: 12px;
+      max-width: 820px;
+      width: 95%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    h1 { color: #00e1ff; font-size: 24px; margin-bottom: 10px; }
+    .small { font-size: 15px; line-height: 1.6; color: #ccc; }
+    .row { display: flex; gap: 10px; margin: 15px 0; }
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 0;
+      font-size: 17px;
+      outline: none;
+    }
+    .badge {
+      background: #00e1ff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #111;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .info { margin-top: 15px; }
+    .small-muted { font-size: 14px; color: #bbb; }
+    .log {
+      background: #222;
+      border-radius: 8px;
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 14px;
+      height: 180px;
+      overflow-y: auto;
+      color: #0ff;
+    }
+
+    /* Overlay التنبيه */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .alert-box {
+      background: #111;
+      padding: 24px;
+      border-radius: 12px;
+      max-width: 820px;
+      width: 95%;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    .alert-box img {
+      width: 96px;
+      height: 96px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .alert-content { flex: 1; }
+    .alert-title { font-size: 20px; margin: 0 0 6px 0; color: #00e1ff; }
+    .alert-text { font-size: 18px; margin: 0 0 12px 0; }
+    .alert-actions { display: flex; gap: 10px; }
+    .btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn-stop { background: #444; color: #fff; }
+    .btn-dismiss { background: #eee; color: #111; }
+  </style>
 </head>
 <body>
   <div class="card">
@@ -40,12 +110,12 @@
     </div>
 
     <div class="info">
-      <div class="small-muted">أرقام المالك (مقارنة تلقائية):</div>
+      <div class="small-muted">أرقام المالك:</div>
       <ul id="ownerList" style="margin:8px 0 0 0;padding-left:18px"></ul>
     </div>
 
     <div class="info">
-      <label class="small-muted">نص الإشعار (يمكن تعديله):</label>
+      <label class="small-muted">نص الإشعار (قابل للتعديل):</label>
       <div style="margin-top:8px">
         <input id="messageInput" type="text" value="🔔 السادة مشرفين الزهراني — هذه رسالة تنبيه للتجربة فقط" />
       </div>
@@ -55,19 +125,19 @@
       <div><strong>سجل الأحداث:</strong></div>
     </div>
 
-    <p class="small-muted" style="margin-top:12px">المشروع يستخدم Firebase Firestore لتسجيل الاشتراكات والتنبيهات. لا حاجة لخادم.</p>
+    <p class="small-muted" style="margin-top:12px">المشروع يستخدم Firebase Firestore لتسجيل الاشتراكات والتنبيهات.</p>
   </div>
 
-  <!-- Alert overlay -->
+  <!-- صندوق التنبيه -->
   <div id="overlay" class="overlay" role="dialog" aria-hidden="true">
     <div class="alert-box">
-      <img id="alertIcon" src="https://i.ibb.co/9sWjQW2/alert-icon.png" alt="شعار التنبيه"/>
+      <img id="alertIcon" src="https://i.ibb.co/chmmTz2p/alert-icon.png" alt="شعار التنبيه"/>
       <div class="alert-content">
         <div class="alert-title">تنبيه عاجل — مشرفين الزهراني</div>
         <div class="alert-text" id="alertMessage">—</div>
         <div class="alert-actions">
           <button id="stopBtn" class="btn btn-stop">إيقاف الصوت</button>
-          <button id="dismissBtn" class="btn btn-dismiss">اغلاق</button>
+          <button id="dismissBtn" class="btn btn-dismiss">إغلاق</button>
         </div>
       </div>
     </div>
@@ -78,7 +148,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore-compat.js"></script>
 
 <script>
-/* ========== إعداد Firebase (استخدمت ما أعطيتَه) ========== */
+/* إعداد Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyAyowWAzM5tpmNVxx_1XoxZpQIRSKkRExA",
   authDomain: "al-zahrani-platform.firebaseapp.com",
@@ -90,198 +160,132 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ========== أرقام المالك التي أعطيتها (نمذجتها) ========== */
+/* أرقام المالك */
 const ownerNumbers = [
   "+966555956147",
   "+966570460094",
   "+966582976776"
 ];
-// عرض الأرقام في الواجهة (قابلة للتعديل لاحقاً)
 const ownerList = document.getElementById('ownerList');
-ownerNumbers.forEach(n=> {
-  const li = document.createElement('li');
-  li.textContent = n;
+ownerNumbers.forEach(n=>{
+  const li=document.createElement('li');
+  li.textContent=n;
   ownerList.appendChild(li);
 });
 
-/* ========== عناصر DOM ========== */
-const phoneInput = document.getElementById('phoneInput');
-const logBox = document.getElementById('logBox');
-const overlay = document.getElementById('overlay');
-const alertMessage = document.getElementById('alertMessage');
-const stopBtn = document.getElementById('stopBtn');
-const dismissBtn = document.getElementById('dismissBtn');
-const messageInput = document.getElementById('messageInput');
-const alertIcon = document.getElementById('alertIcon');
+/* عناصر DOM */
+const phoneInput=document.getElementById('phoneInput');
+const logBox=document.getElementById('logBox');
+const overlay=document.getElementById('overlay');
+const alertMessage=document.getElementById('alertMessage');
+const stopBtn=document.getElementById('stopBtn');
+const dismissBtn=document.getElementById('dismissBtn');
+const messageInput=document.getElementById('messageInput');
+const alertIcon=document.getElementById('alertIcon');
 
-/* استخدمت شعارك (رابط iBB الذي أعطيتَه). إذا ترغب بتغيير الشعار ضع رابط هنا: */
-alertIcon.src = "https://i.ibb.co/chmmTz2p/alert-icon.png";
-
-/* ========== Helpers: تطبيع أرقام الهواتف ========== */
+/* دالة تطبيع الرقم */
 function normalizeNumber(input){
   if(!input) return "";
-  let v = input.replace(/\s+/g,'').replace(/-/g,'');
-  // لو بدأ بـ0 مثل 055... نعمل +9665...
-  if(/^0\d{8,9}$/.test(v)){
-    v = '+966' + v.slice(1);
-  }
-  // لو بدأ بـ5... (بدون 0): +9665...
-  if(/^[5]\d{8,9}$/.test(v)){
-    v = '+966' + v;
-  }
-  // لو بدأ بـ966 دون +:
-  if(/^966\d+/.test(v) && v[0] !== '+') v = '+' + v;
+  let v=input.replace(/\s+/g,'').replace(/-/g,'');
+  if(/^0\d{8,9}$/.test(v)) v='+966'+v.slice(1);
+  if(/^[5]\d{8,9}$/.test(v)) v='+966'+v;
+  if(/^966\d+/.test(v)&&v[0]!=='+' ) v='+'+v;
   return v;
 }
 
-/* ========== WebAudio: مولد صوت صفارة طوارئ برمجياً ==========
-   هذه الدالة تنشئ صوت صفارة متذبذب (siren-like). متحكم stop عبر returned stop().
-*/
-function createSiren() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.value = 700; // base
-
-  gain.gain.value = 0;
-  gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+/* صوت صفارة إنذار */
+function createSiren(){
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  osc.type='sine'; osc.frequency.value=700;
+  gain.gain.value=0.0001;
+  osc.connect(gain); gain.connect(ctx.destination);
   osc.start();
-
-  // LFO: نغير التردد بشكل دوري بين 600 و 1200
-  let up = true;
-  let running = true;
-  const interval = setInterval(()=>{
+  let up=true, running=true;
+  const interval=setInterval(()=>{
     if(!running) return;
-    const target = up ? 1200 : 650;
-    // smooth ramp
-    osc.frequency.cancelScheduledValues(ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(target, ctx.currentTime + 0.25);
-    up = !up;
-  }, 450);
-
-  // fade in
-  gain.gain.cancelScheduledValues(ctx.currentTime);
-  gain.gain.linearRampToValueAtTime(1.0, ctx.currentTime + 0.08);
-
+    const target=up?1200:650;
+    osc.frequency.linearRampToValueAtTime(target,ctx.currentTime+0.25);
+    up=!up;
+  },450);
+  gain.gain.linearRampToValueAtTime(1.0,ctx.currentTime+0.08);
   function stop(){
-    running = false;
-    clearInterval(interval);
-    // fade out then stop
-    gain.gain.cancelScheduledValues(ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
-    setTimeout(()=> {
-      try{ osc.stop(); ctx.close(); }catch(e){}
-    }, 350);
+    running=false; clearInterval(interval);
+    gain.gain.linearRampToValueAtTime(0.0001,ctx.currentTime+0.25);
+    setTimeout(()=>{try{osc.stop();ctx.close();}catch(e){}},350);
   }
-  return { stop };
+  return {stop};
 }
 
-/* حالة حالية */
-let sirenController = null;
+let sirenController=null;
 
-/* ========== تسجيل وإرسال إلى Firestore ==========
-   نخزن ضمن collections:
-   - subscribers (doc id = phone) يحتوي معلومات أساسية
-   - alerts سجلات الإشعارات: phone, message, timestamp
-*/
+/* Firestore تسجيل */
 async function registerSubscriber(phone){
   try{
     await db.collection('subscribers').doc(phone).set({
-      phone,
-      registeredAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, {merge:true});
+      phone, registeredAt: firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
     appendLog(`تم تسجيل المشترك: ${phone}`);
-  }catch(err){
-    appendLog('خطأ في تسجيل المشترك: ' + err.message);
-  }
+  }catch(e){appendLog('خطأ: '+e.message);}
 }
 
-async function logAlert(phone, message){
+async function logAlert(phone,message){
   try{
     await db.collection('alerts').add({
-      phone, message,
-      ts: firebase.firestore.FieldValue.serverTimestamp()
+      phone,message,ts:firebase.firestore.FieldValue.serverTimestamp()
     });
-    appendLog(`سجل تنبيه للمستخدم ${phone}`);
-  }catch(err){
-    appendLog('خطأ في تسجيل التنبيه: ' + err.message);
-  }
+    appendLog(`سجل تنبيه: ${phone}`);
+  }catch(e){appendLog('خطأ في السجل: '+e.message);}
 }
 
-/* ========== واجهة المستخدم وسلوك الكتابة التلقائي ==========
-   نريد: عند إدخال رقم يتم التحقق فوريًا، وإذا تطابقت مع مالك → تشغيل الإنذار.
-*/
+/* واجهة المستخدم */
 function appendLog(text){
-  const p = document.createElement('div');
-  p.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+  const p=document.createElement('div');
+  p.textContent=`[${new Date().toLocaleTimeString()}] ${text}`;
   logBox.appendChild(p);
-  logBox.scrollTop = logBox.scrollHeight;
+  logBox.scrollTop=logBox.scrollHeight;
 }
 
-/* Debounce لعدم التكرار عند كل حرف */
-let lastCheck = null;
-let lastMatched = null;
+let lastCheck=null,lastMatched=null;
 function checkInputDebounced(){
   if(lastCheck) clearTimeout(lastCheck);
-  lastCheck = setTimeout(async ()=>{
-    const raw = phoneInput.value.trim();
-    const norm = normalizeNumber(raw);
+  lastCheck=setTimeout(async()=>{
+    const raw=phoneInput.value.trim();
+    const norm=normalizeNumber(raw);
     if(!norm) return;
-    appendLog('تحقق من الرقم: ' + norm);
-    // دائماً نخزن المشترك (حذف إذا فارغ) — لأنك أردت تسجيل أرقامك
+    appendLog('تحقق من الرقم: '+norm);
     await registerSubscriber(norm);
-
-    // هل هو ضمن أرقام المالك؟
-    const found = ownerNumbers.includes(norm);
-    if(found && lastMatched !== norm){
-      lastMatched = norm;
-      // عرض التنبيه وتشغيل الصوت
-      const message = messageInput.value || 'تنبيه تجريبي';
+    const found=ownerNumbers.includes(norm);
+    if(found&&lastMatched!==norm){
+      lastMatched=norm;
+      const message=messageInput.value||'تنبيه تجريبي';
       showAlert(message);
-      await logAlert(norm, message);
+      await logAlert(norm,message);
     }
-  }, 450);
+  },450);
 }
+phoneInput.addEventListener('input',checkInputDebounced);
 
-/* الحدث على الخانة */
-phoneInput.addEventListener('input', checkInputDebounced);
-
-/* ========== عرض/إيقاف صندوق التنبيه ========= */
+/* عرض التنبيه */
 function showAlert(message){
-  alertMessage.textContent = message;
-  overlay.style.display = 'flex';
-  // شغل الصوت (سيتم السماح لأن المستخدم تفاعل بكتابة الرقم)
-  if(sirenController) try{ sirenController.stop(); }catch(e){}
+  alertMessage.textContent=message;
+  overlay.style.display='flex';
+  if(sirenController) try{sirenController.stop();}catch(e){}
   try{
-    sirenController = createSiren();
+    sirenController=createSiren();
     appendLog('تشغيل صوت الإنذار');
   }catch(e){
-    appendLog('المتصفح لا يسمح بتشغيل الصوت برمجياً: ' + e.message);
+    appendLog('لا يمكن تشغيل الصوت: '+e.message);
   }
 }
 function stopSiren(){
-  if(sirenController){ try{ sirenController.stop(); }catch(e){} sirenController = null; appendLog('تم إيقاف الصوت'); }
+  if(sirenController){try{sirenController.stop();}catch(e){}sirenController=null;appendLog('تم إيقاف الصوت');}
 }
-stopBtn.addEventListener('click', ()=>{ stopSiren(); });
-dismissBtn.addEventListener('click', ()=>{ stopSiren(); overlay.style.display = 'none'; });
-
-/* عند فتح الصفحة: إظهار رسالة تعليمية */
-appendLog('الصفحة جاهزة. اكتب رقمك للبدء.');
-
-/* اختياري: لو أردت تحميل سجل التنبيهات السابقة يمكنك إظهارها هنا (تعليق) */
-/*
-db.collection('alerts').orderBy('ts','desc').limit(10).get().then(snapshot=>{
-  snapshot.forEach(doc=>{
-    const d = doc.data();
-    appendLog(`سجل سابق - ${d.phone}: ${d.message} @ ${d.ts?.toDate?.() || ''}`);
-  });
-});
-*/
+stopBtn.addEventListener('click',()=>{stopSiren();});
+dismissBtn.addEventListener('click',()=>{stopSiren();overlay.style.display='none';});
+appendLog('الصفحة جاهزة — اكتب رقمك للبدء.');
 </script>
 </body>
 </html>
+
